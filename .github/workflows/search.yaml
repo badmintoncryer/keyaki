@@ -26,6 +26,10 @@ jobs:
         run: npm ci
         working-directory: playwright
 
+      - name: Install playwright
+        run: npx playwright install
+        working-directory: playwright
+
       - name: Run searchVacantGym script
         run: npx ts-node src/searchVacantGym.ts
         working-directory: playwright
