@@ -33,3 +33,5 @@ jobs:
       - name: Run searchVacantGym script
         run: npx ts-node src/searchVacantGym.ts
         working-directory: playwright
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
