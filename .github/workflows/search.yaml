@@ -9,6 +9,10 @@ env:
   USER_ID: ${{ secrets.USER_ID }}
   PASSWORD: ${{ secrets.PASSWORD }}
 
+permissions:
+  contents: write
+  pull-requests: write
+
 jobs:
   run-search:
     runs-on: ubuntu-latest

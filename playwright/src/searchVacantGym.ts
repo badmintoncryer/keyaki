@@ -59,6 +59,11 @@ async function main() {
     await page.waitForURL(
       "https://setagaya.keyakinet.net/Web/Yoyaku/WgR_ShisetsubetsuAkiJoukyou"
     );
+    await page.getByText("ヶ月").click();
+    await page.getByRole("button", { name: " 表示" }).click();
+    await page.goto(
+      "https://setagaya.keyakinet.net/Web/Yoyaku/WgR_ShisetsubetsuAkiJoukyou"
+    );
 
     const tables = await page.locator("table.calendar").all();
     for (const table of tables) {
@@ -130,6 +135,8 @@ async function main() {
       await execAsync(
         'git config --global user.email "github-actions[bot]@users.noreply.github.com"'
       );
+      const repoUrl = `https://x-access-token:${GITHUB_TOKEN}@github.com/${process.env.GITHUB_REPOSITORY}.git`;
+      await execAsync(`git remote set-url origin ${repoUrl}`);
       await execAsync(`git checkout -b ${branchName}`);
       await execAsync("git add data/");
       await execAsync('git commit -m "Update reservations"');
