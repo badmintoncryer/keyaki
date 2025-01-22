@@ -145,23 +145,37 @@ async function main() {
       await execAsync("git pull --rebase origin main");
       await execAsync(`git push -f origin ${branchName}`);
 
-      // Pull Request作成
-      const prUrl = `https://api.github.com/repos/${process.env.GITHUB_REPOSITORY}/pulls`;
-      const prBody = {
-        title: "予約情報の更新",
-        body: "予約可能な体育館の情報が更新されました",
-        head: branchName,
-        base: "main",
-      };
+      // Pull Request作成部分を修正
+      const owner = process.env.GITHUB_REPOSITORY?.split("/")[0];
+      const repo = process.env.GITHUB_REPOSITORY?.split("/")[1];
+      const prUrl = `https://api.github.com/repos/${owner}/${repo}/pulls`;
+      console.log("Creating PR:", { owner, repo, branchName });
 
-      await fetch(prUrl, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${GITHUB_TOKEN}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(prBody),
-      });
+      try {
+        const response = await fetch(prUrl, {
+          method: "POST",
+          headers: {
+            Authorization: `token ${GITHUB_TOKEN}`,
+            Accept: "application/vnd.github.v3+json",
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            title: "予約情報の更新",
+            body: "予約可能な体育館の情報が更新されました",
+            head: branchName,
+            base: "main",
+          }),
+        });
+
+        if (!response.ok) {
+          const error = await response.text();
+          throw new Error(`PR creation failed: ${error}`);
+        }
+
+        console.log("PR created successfully");
+      } catch (error) {
+        console.error("PR作成中にエラーが発生しました:", error);
+      }
     }
   } catch (error) {
     console.error("エラーが発生しました:", error);
