@@ -1,0 +1,21 @@
+{
+  "name": "keyaki-search-vacant-gym",
+  "version": "1.0.0",
+  "scripts": {
+    "clean": "rm -rf dist/*",
+    "build": "npm run clean && tsc"
+  },
+  "dependencies": {
+    "@aws-sdk/client-sns": "^3.731.1",
+    "playwright": "^1.49.1",
+    "playwright-core": "^1.49.1"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.131",
+    "@types/node": "^20.11.5",
+    "aws-cdk": "^2.176.0",
+    "aws-cdk-lib": "^2.176.0",
+    "constructs": "^10.4.2",
+    "typescript": "^5.7.3"
+  }
+}
