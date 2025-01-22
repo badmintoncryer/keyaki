@@ -98,17 +98,18 @@ async function main() {
 
     // 既存のJSONを読み込む
     let existingReservations: Reservation[] = [];
+    let hasChanges = false;
+
     try {
       const data = fs.readFileSync(outputPath, "utf8");
       existingReservations = JSON.parse(data);
+      hasChanges =
+        JSON.stringify(existingReservations.sort()) !==
+        JSON.stringify(newReservations.sort());
     } catch (error) {
-      console.log("既存の予約ファイルが見つかりません");
+      console.log("既存の予約ファイルが見つかりません。新規作成します。");
+      hasChanges = true;
     }
-
-    // 予約情報に変更があるか確認
-    const hasChanges =
-      JSON.stringify(existingReservations.sort()) !==
-      JSON.stringify(newReservations.sort());
 
     if (hasChanges) {
       // dataディレクトリがない場合は作成
