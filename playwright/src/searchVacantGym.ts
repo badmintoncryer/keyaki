@@ -127,6 +127,7 @@ async function main() {
       fs.writeFileSync(outputPath, JSON.stringify(newReservations, null, 2));
 
       // Git操作
+      // Git操作の部分を修正
       const branchName = `update-reservations-${
         new Date().toISOString().split("T")[0]
       }`;
@@ -141,7 +142,8 @@ async function main() {
       await execAsync(`git checkout -b ${branchName}`);
       await execAsync("git add data/");
       await execAsync('git commit -m "Update reservations"');
-      await execAsync(`git push origin ${branchName}`);
+      await execAsync("git pull --rebase origin main");
+      await execAsync(`git push -f origin ${branchName}`);
 
       // Pull Request作成
       const prUrl = `https://api.github.com/repos/${process.env.GITHUB_REPOSITORY}/pulls`;
