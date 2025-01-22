@@ -5,6 +5,10 @@ on:
     - cron: '0 */3 * * *'
   workflow_dispatch:
 
+env:
+  USER_ID: ${{ secrets.USER_ID }}
+  PASSWORD: ${{ secrets.PASSWORD }}
+
 jobs:
   run-search:
     runs-on: ubuntu-latest
