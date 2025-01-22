@@ -130,13 +130,14 @@ async function main() {
       const branchName = `update-reservations-${
         new Date().toISOString().split("T")[0]
       }`;
-
       await execAsync('git config --global user.name "github-actions[bot]"');
       await execAsync(
         'git config --global user.email "github-actions[bot]@users.noreply.github.com"'
       );
       const repoUrl = `https://x-access-token:${GITHUB_TOKEN}@github.com/${process.env.GITHUB_REPOSITORY}.git`;
       await execAsync(`git remote set-url origin ${repoUrl}`);
+      await execAsync("git fetch origin");
+      await execAsync("git reset --hard origin/main");
       await execAsync(`git checkout -b ${branchName}`);
       await execAsync("git add data/");
       await execAsync('git commit -m "Update reservations"');
