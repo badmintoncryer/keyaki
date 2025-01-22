@@ -125,57 +125,6 @@ async function main() {
 
       // 新しい予約情報を保存
       fs.writeFileSync(outputPath, JSON.stringify(newReservations, null, 2));
-
-      // Git操作
-      // Git操作の部分を修正
-      const branchName = `update-reservations-${
-        new Date().toISOString().split("T")[0]
-      }`;
-      await execAsync('git config --global user.name "github-actions[bot]"');
-      await execAsync(
-        'git config --global user.email "github-actions[bot]@users.noreply.github.com"'
-      );
-      const repoUrl = `https://x-access-token:${GITHUB_TOKEN}@github.com/${process.env.GITHUB_REPOSITORY}.git`;
-      await execAsync(`git remote set-url origin ${repoUrl}`);
-      await execAsync("git fetch origin");
-      await execAsync("git reset --hard origin/main");
-      await execAsync(`git checkout -b ${branchName}`);
-      await execAsync("git add data/");
-      await execAsync('git commit -m "Update reservations"');
-      await execAsync("git pull --rebase origin main");
-      await execAsync(`git push -f origin ${branchName}`);
-
-      // Pull Request作成部分を修正
-      const owner = process.env.GITHUB_REPOSITORY?.split("/")[0];
-      const repo = process.env.GITHUB_REPOSITORY?.split("/")[1];
-      const prUrl = `https://api.github.com/repos/${owner}/${repo}/pulls`;
-      console.log("Creating PR:", { owner, repo, branchName });
-
-      try {
-        const response = await fetch(prUrl, {
-          method: "POST",
-          headers: {
-            Authorization: `token ${GITHUB_TOKEN}`,
-            Accept: "application/vnd.github.v3+json",
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            title: "予約情報の更新",
-            body: "予約可能な体育館の情報が更新されました",
-            head: branchName,
-            base: "main",
-          }),
-        });
-
-        if (!response.ok) {
-          const error = await response.text();
-          throw new Error(`PR creation failed: ${error}`);
-        }
-
-        console.log("PR created successfully");
-      } catch (error) {
-        console.error("PR作成中にエラーが発生しました:", error);
-      }
     }
   } catch (error) {
     console.error("エラーが発生しました:", error);

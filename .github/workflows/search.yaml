@@ -39,3 +39,10 @@ jobs:
         working-directory: playwright
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: peter-evans/create-pull-request@v5
+        with:
+          commit-message: Update reservation status
+          delete-branch: true
+          title: けやきネット予約情報が更新されました
+          reviewers: badmintoncryer
