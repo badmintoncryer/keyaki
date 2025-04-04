@@ -142,59 +142,13 @@ async function main() {
     ];
 
     for (const school of schools) {
-      // For schools that used getByText in the original code
-      if (
-        [
-          "喜多見小学校",
-          "砧南小学校",
-          "砧小学校",
-          "希望丘小学校",
-          "給田小学校",
-          "経堂小学校",
-          "駒沢小学校",
-          "駒繋小学校",
-          "桜小学校",
-          "桜町小学校",
-          "三宿小学校",
-          "武蔵丘小学校",
-          "明正小学校",
-          "八幡小学校",
-          "山崎小学校",
-          "山野小学校",
-          "用賀小学校",
-          "芦花小学校",
-          "若林小学校",
-          "梅丘中学校",
-          "船橋希望中学校",
-          "松沢中学校",
-          "三宿中学校",
-          "緑丘中学校",
-          "八幡中学校",
-          "用賀中学校",
-          "芦花中学校",
-          "池尻２丁目体育館",
-        ].includes(school)
-      ) {
-        await page.getByText(school).click();
+      // Special case for 玉川小学校 which had a different row selector
+      if (school === "玉川小学校") {
+        await page.getByRole('row', { name: ' 玉川小学校 案内 ' }).locator('label').click();
       }
-      // For the special case with exact:true in the click method
-      else if (
-        ["駒繋小学校", "深沢小学校", "三宿中学校", "武蔵丘小学校"].includes(
-          school
-        )
-      ) {
-        await page.getByText(school, { exact: true }).click();
-      }
-      // For the special case of 玉川小学校 which had a different row selector
-      else if (school === "玉川小学校") {
-        await page
-          .getByRole("row", { name: " 玉川小学校 案内 " })
-          .locator("label")
-          .click();
-      }
-      // For all other schools that used getByRole with cell
+      // For all schools - use the cell and label approach which is more specific
       else {
-        await page.getByRole("cell", { name: school }).locator("label").click();
+        await page.getByRole('cell', { name: school }).locator('label').click();
       }
     }
 
