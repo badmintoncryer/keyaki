@@ -39,8 +39,9 @@ async function main() {
     await page.getByRole("link", { name: " 一覧から探す" }).click();
     await page.getByRole("button", { name: "お気に入りの施設" }).click();
     // 繰り返し「さらに読み込む」をクリック
-    for (let i = 0; i < 8; i++) {
+    while (await page.getByRole("link", { name: "さらに読み込む" }).isVisible()) {
       await page.getByRole("link", { name: "さらに読み込む" }).click();
+      await page.waitForTimeout(2_000);
     }
 
     const schools = [
@@ -144,11 +145,15 @@ async function main() {
     for (const school of schools) {
       // Special case for 玉川小学校 which had a different row selector
       if (school === "玉川小学校") {
-        await page.getByRole('row', { name: ' 玉川小学校 案内 ' }).locator('label').click();
+        await page.getByRole('row', { name: ' 玉川小学校 案内 ' }).locator('label').click({
+          timeout: 300_000,
+        });
       }
       // For all schools - use the cell and label approach which is more specific
       else {
-        await page.getByRole('cell', { name: school }).locator('label').click();
+        await page.getByRole('cell', { name: school }).locator('label').click({
+          timeout: 300_000,
+        });
       }
     }
 
