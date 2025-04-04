@@ -38,32 +38,140 @@ async function main() {
     await page.getByRole("link", { name: "ログイン" }).click();
     await page.getByRole("link", { name: " 一覧から探す" }).click();
     await page.getByRole("button", { name: "お気に入りの施設" }).click();
+    // 8回クリック
+    for (let i = 0; i < 8; i++) {
+      await page
+        .getByRole("link", { name: "さらに読み込む" })
+        .click({ timeout: 3_000 });
+      console.log("さらに読み込むをクリックしました。");
+    }
 
     const schools = [
+      // Community centers
+      "宮坂区民センター",
+      "守山地区会館",
+
+      // Elementary schools (小学校)
+      "赤堤小学校",
+      "旭小学校",
+      "池尻小学校",
+      "池之上小学校",
+      "奥沢小学校",
+      "上北沢小学校",
+      "烏山小学校",
+      "烏山北小学校",
+      "喜多見小学校",
+      "砧南小学校",
       "砧小学校",
+      "希望丘小学校",
+      "給田小学校",
       "経堂小学校",
+      "駒沢小学校",
+      "駒繋小学校",
+      "桜小学校",
+      "桜町小学校",
       "桜丘小学校",
       "笹原小学校",
+      "三軒茶屋小学校",
+      "下北沢小学校",
+      "城山小学校",
+      "瀬田小学校",
+      "世田谷小学校",
       "祖師谷小学校",
+      "太子堂小学校",
+      "玉川小学校",
+      "玉堤小学校",
+      "多聞小学校",
+      "代沢小学校",
+      "千歳小学校",
+      "千歳台小学校",
       "塚戸小学校",
+      "弦巻小学校",
+      "等々力小学校",
+      "中里小学校",
+      "中町小学校",
+      "中丸小学校",
+      "八幡山小学校",
+      "東玉川小学校",
+      "東深沢小学校",
+      "深沢小学校",
+      "二子玉川小学校",
+      "船橋小学校",
+      "松丘小学校",
+      "松沢小学校",
+      "松原小学校",
+      "三宿小学校",
+      "武蔵丘小学校",
+      "明正小学校",
+      "八幡小学校",
+      "山崎小学校",
       "山野小学校",
+      "用賀小学校",
+      "芦花小学校",
+      "若林小学校",
+
+      // Junior high schools (中学校)
+      "梅丘中学校",
+      "奥沢中学校",
+      "上祖師谷中学校",
+      "烏山中学校",
+      "北沢中学校",
+      "喜多見中学校",
       "砧中学校",
+      "砧南中学校",
+      "駒沢中学校",
+      "駒留中学校",
       "桜丘中学校",
+      "桜木中学校",
+      "瀬田中学校",
+      "世田谷中学校",
+      "太子堂中学校",
+      "玉川中学校",
+      "千歳中学校",
+      "弦巻中学校",
+      "東深沢中学校",
+      "深沢中学校",
+      "富士中学校",
+      "船橋希望中学校",
+      "松沢中学校",
+      "三宿中学校",
+      "緑丘中学校",
+      "八幡中学校",
+      "用賀中学校",
+      "芦花中学校",
+
+      // Gymnasium
+      "池尻２丁目体育館",
     ];
 
     for (const school of schools) {
-      await page.getByRole("cell", { name: school }).locator("label").click();
+      try {
+        await page.getByRole("cell", { name: school }).locator("label").click({
+          timeout: 3_000,
+        });
+      } catch (error) {
+        // do nothing
+        console.warn(
+          `施設名「${school}」が見つかりませんでした。エラー: ${error}`
+        );
+        continue;
+      }
     }
 
-    await page.getByRole("link", { name: "次へ進む" }).click();
+    await page
+      .getByRole("link", { name: "次へ進む" })
+      .click({ timeout: 300_000 });
     await page.waitForURL(
-      "https://setagaya.keyakinet.net/Web/Yoyaku/WgR_ShisetsubetsuAkiJoukyou"
+      "https://setagaya.keyakinet.net/Web/Yoyaku/WgR_ShisetsubetsuAkiJoukyou",
+      { timeout: 300_000 }
     );
     await page.getByText("ヶ月").click();
-    await page.getByRole("button", { name: " 表示" }).click();
-    await page.goto(
-      "https://setagaya.keyakinet.net/Web/Yoyaku/WgR_ShisetsubetsuAkiJoukyou"
-    );
+    await page
+      .getByRole("button", { name: " 表示" })
+      .click({ timeout: 300_000 });
+    // await page.goto(
+    //   "https://setagaya.keyakinet.net/Web/Yoyaku/WgR_ShisetsubetsuAkiJoukyou"
+    // );
 
     const tables = await page.locator("table.calendar").all();
     for (const table of tables) {
@@ -76,7 +184,10 @@ async function main() {
       for (const row of rows) {
         const facilityType = await row.locator(".shisetsu").textContent();
 
-        if (facilityType?.includes("体育")) {
+        if (
+          facilityType?.includes("体育") ||
+          facilityType?.includes("多目的室")
+        ) {
           const labels = await row.locator("label").all();
           for (const [index, label] of labels.entries()) {
             const status = await label.textContent();
