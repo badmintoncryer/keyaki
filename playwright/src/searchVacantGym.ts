@@ -38,13 +38,12 @@ async function main() {
     await page.getByRole("link", { name: "ログイン" }).click();
     await page.getByRole("link", { name: " 一覧から探す" }).click();
     await page.getByRole("button", { name: "お気に入りの施設" }).click();
-    // 繰り返し「さらに読み込む」をクリック
-    while (
-      await page.getByRole("link", { name: "さらに読み込む" }).isVisible()
-    ) {
-      await page.getByRole("link", { name: "さらに読み込む" }).click();
+    // 8回クリック
+    for (let i = 0; i < 8; i++) {
+      await page
+        .getByRole("link", { name: "さらに読み込む" })
+        .click({ timeout: 3_000 });
       console.log("さらに読み込むをクリックしました。");
-      await page.waitForTimeout(2_000);
     }
 
     const schools = [
