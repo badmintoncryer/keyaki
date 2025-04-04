@@ -146,23 +146,9 @@ async function main() {
 
     for (const school of schools) {
       try {
-        // Special case for 玉川小学校 which had a different row selector
-        if (school === "玉川小学校") {
-          await page
-            .getByRole("row", { name: " 玉川小学校 案内 " })
-            .locator("label")
-            .click();
-        }
-        // For all schools - use the cell and label approach which is more specific
-        else {
-          await page
-            .getByRole("cell", { name: school })
-            .locator("label")
-            .click({
-              timeout: 3_000,
-            });
-          console.log(`施設名「${school}」をクリックしました。`);
-        }
+        await page.getByRole("cell", { name: school }).locator("label").click({
+          timeout: 3_000,
+        });
       } catch (error) {
         // do nothing
         console.warn(
@@ -172,17 +158,20 @@ async function main() {
       }
     }
 
-    await page.getByRole("link", { name: "次へ進む" }).click({ timeout: 300_000 });
+    await page
+      .getByRole("link", { name: "次へ進む" })
+      .click({ timeout: 300_000 });
     await page.waitForURL(
       "https://setagaya.keyakinet.net/Web/Yoyaku/WgR_ShisetsubetsuAkiJoukyou",
       { timeout: 300_000 }
     );
     await page.getByText("ヶ月").click();
-    await page.getByRole("button", { name: " 表示" }).click();
-    await page.goto(
-      "https://setagaya.keyakinet.net/Web/Yoyaku/WgR_ShisetsubetsuAkiJoukyou",
-      { timeout: 300_000 }
-    );
+    await page
+      .getByRole("button", { name: " 表示" })
+      .click({ timeout: 300_000 });
+    // await page.goto(
+    //   "https://setagaya.keyakinet.net/Web/Yoyaku/WgR_ShisetsubetsuAkiJoukyou"
+    // );
 
     const tables = await page.locator("table.calendar").all();
     for (const table of tables) {
