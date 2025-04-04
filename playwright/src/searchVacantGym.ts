@@ -39,8 +39,11 @@ async function main() {
     await page.getByRole("link", { name: " 一覧から探す" }).click();
     await page.getByRole("button", { name: "お気に入りの施設" }).click();
     // 繰り返し「さらに読み込む」をクリック
-    while (await page.getByRole("link", { name: "さらに読み込む" }).isVisible()) {
+    while (
+      await page.getByRole("link", { name: "さらに読み込む" }).isVisible()
+    ) {
       await page.getByRole("link", { name: "さらに読み込む" }).click();
+      console.log("さらに読み込むをクリックしました。");
       await page.waitForTimeout(2_000);
     }
 
@@ -143,28 +146,40 @@ async function main() {
     ];
 
     for (const school of schools) {
-      // Special case for 玉川小学校 which had a different row selector
-      if (school === "玉川小学校") {
-        await page.getByRole('row', { name: ' 玉川小学校 案内 ' }).locator('label').click({
-          timeout: 300_000,
-        });
-      }
-      // For all schools - use the cell and label approach which is more specific
-      else {
-        await page.getByRole('cell', { name: school }).locator('label').click({
-          timeout: 300_000,
-        });
+      try {
+        // Special case for 玉川小学校 which had a different row selector
+        if (school === "玉川小学校") {
+          await page
+            .getByRole("row", { name: " 玉川小学校 案内 " })
+            .locator("label")
+            .click();
+        }
+        // For all schools - use the cell and label approach which is more specific
+        else {
+          await page
+            .getByRole("cell", { name: school })
+            .locator("label")
+            .click();
+        }
+      } catch (error) {
+        // do nothing
+        console.warn(
+          `施設名「${school}」が見つかりませんでした。エラー: ${error}`
+        );
+        continue;
       }
     }
 
     await page.getByRole("link", { name: "次へ進む" }).click();
     await page.waitForURL(
-      "https://setagaya.keyakinet.net/Web/Yoyaku/WgR_ShisetsubetsuAkiJoukyou"
+      "https://setagaya.keyakinet.net/Web/Yoyaku/WgR_ShisetsubetsuAkiJoukyou",
+      { timeout: 300_000 }
     );
     await page.getByText("ヶ月").click();
     await page.getByRole("button", { name: " 表示" }).click();
     await page.goto(
-      "https://setagaya.keyakinet.net/Web/Yoyaku/WgR_ShisetsubetsuAkiJoukyou"
+      "https://setagaya.keyakinet.net/Web/Yoyaku/WgR_ShisetsubetsuAkiJoukyou",
+      { timeout: 300_000 }
     );
 
     const tables = await page.locator("table.calendar").all();
@@ -178,7 +193,10 @@ async function main() {
       for (const row of rows) {
         const facilityType = await row.locator(".shisetsu").textContent();
 
-        if (facilityType?.includes("体育") || facilityType?.includes("多目的室")) {
+        if (
+          facilityType?.includes("体育") ||
+          facilityType?.includes("多目的室")
+        ) {
           const labels = await row.locator("label").all();
           for (const [index, label] of labels.entries()) {
             const status = await label.textContent();
