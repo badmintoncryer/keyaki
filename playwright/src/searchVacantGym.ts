@@ -172,7 +172,7 @@ async function main() {
       }
     }
 
-    await page.getByRole("link", { name: "次へ進む" }).click();
+    await page.getByRole("link", { name: "次へ進む" }).click({ timeout: 300_000 });
     await page.waitForURL(
       "https://setagaya.keyakinet.net/Web/Yoyaku/WgR_ShisetsubetsuAkiJoukyou",
       { timeout: 300_000 }
