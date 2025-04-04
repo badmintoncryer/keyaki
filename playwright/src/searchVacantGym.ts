@@ -159,7 +159,10 @@ async function main() {
           await page
             .getByRole("cell", { name: school })
             .locator("label")
-            .click();
+            .click({
+              timeout: 3_000,
+            });
+          console.log(`施設名「${school}」をクリックしました。`);
         }
       } catch (error) {
         // do nothing
