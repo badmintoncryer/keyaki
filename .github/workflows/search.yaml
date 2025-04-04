@@ -9,10 +9,6 @@ env:
   USER_ID: ${{ secrets.USER_ID }}
   PASSWORD: ${{ secrets.PASSWORD }}
 
-permissions:
-  contents: write
-  pull-requests: write
-
 jobs:
   run-search:
     runs-on: ubuntu-latest
@@ -37,10 +33,3 @@ jobs:
       - name: Run searchVacantGym script
         run: npx ts-node src/searchVacantGym.ts
         working-directory: playwright
-
-      - uses: peter-evans/create-pull-request@v5
-        with:
-          commit-message: Update reservation status
-          delete-branch: true
-          title: けやきネット予約情報が更新されました
-          reviewers: badmintoncryer
