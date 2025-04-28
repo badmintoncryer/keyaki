@@ -6,7 +6,7 @@ dotenv.config();
 
 const USER_ID = process.env.USER_ID;
 const PASSWORD = process.env.PASSWORD;
-const IS_HEADLESS = process.env.IS_HEADLESS ? true : process.env.IS_HEADLESS === "true";
+const IS_HEADLESS = process.env.IS_HEADLESS ? process.env.IS_HEADLESS === "true" : true;
 
 interface Reservation {
   schoolName: string;
