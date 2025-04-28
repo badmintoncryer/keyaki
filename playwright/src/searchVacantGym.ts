@@ -3,6 +3,8 @@ import * as fs from "fs";
 import * as path from "path";
 import { exec } from "child_process";
 import { promisify } from "util";
+import dotenv from "dotenv";
+dotenv.config();
 
 const execAsync = promisify(exec);
 const USER_ID = process.env.USER_ID;
@@ -16,7 +18,7 @@ interface Reservation {
 
 async function main() {
   const browser = await chromium.launch({
-    headless: true,
+    headless: false,
     args: [
       "--single-process",
       "--window-size=1920,1080",
@@ -36,6 +38,18 @@ async function main() {
     await page.locator("#userID").fill(USER_ID ?? "");
     await page.locator("#passWord").fill(PASSWORD ?? "");
     await page.getByRole("link", { name: "ログイン" }).click();
+    // Check if the "メッセージ" heading exists
+    const messageHeadingExists = await page
+      .getByRole("heading", { name: "メッセージ" })
+      .isVisible()
+      .catch(() => false); // Handle case where element doesn't exist
+    // If the heading exists, click the link with empty name
+    console.log(
+      `メッセージの見出しが${messageHeadingExists ? "存在" : "存在しません"}`)
+    if (messageHeadingExists) {
+      await page.locator('div[data-remodal-id="loginInfo"]').waitFor({ state: 'visible' });
+      await page.locator('div[data-remodal-id="loginInfo"] a.remodal-close').click();
+    }
     await page.getByRole("link", { name: " 一覧から探す" }).click();
     await page.getByRole("button", { name: "お気に入りの施設" }).click();
     // 8回クリック
