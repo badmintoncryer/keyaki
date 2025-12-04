@@ -56,7 +56,7 @@ async function main() {
 
     const schools = [
       // Community centers
-      "宮坂区民センター",
+      // "宮坂区民センター",
       "守山地区会館",
 
       // Elementary schools (小学校)
