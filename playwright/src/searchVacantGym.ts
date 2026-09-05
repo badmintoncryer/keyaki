@@ -31,7 +31,9 @@ async function main() {
 
   try {
     await page.goto("https://setagaya.keyakinet.net/Web/Home/WgR_ModeSelect");
-    await page.locator("#head").getByRole("link", { name: "ログイン" }).click();
+    const loginLink = page.locator("#head").getByRole("link", { name: "ログイン" });
+    await loginLink.waitFor({ state: "visible", timeout: 60_000 });
+    await loginLink.click();
     await page.locator("#userID").fill(USER_ID ?? "");
     await page.locator("#passWord").fill(PASSWORD ?? "");
     await page.getByRole("link", { name: "ログイン" }).click();
@@ -247,10 +249,23 @@ async function main() {
     }
   } catch (error) {
     console.error("エラーが発生しました:", error);
-    process.exit(1);
+    throw error;
   } finally {
     await browser.close();
   }
 }
 
-main().catch(console.error);
+// 対象サイトの応答が不安定で、ログイン画面の描画待ちで落ちることがあるため一度だけ再試行する
+async function run(attempts = 2) {
+  for (let attempt = 1; attempt <= attempts; attempt++) {
+    try {
+      await main();
+      return;
+    } catch (error) {
+      if (attempt === attempts) throw error;
+      console.warn(`リトライします (${attempt}/${attempts})`);
+    }
+  }
+}
+
+run().catch(() => process.exit(1));
